@@ -75,61 +75,21 @@
             color: #ccc;
         }
         
-        .mobile-controls {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
-            gap: 10px;
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-        }
-        
-        .control-btn {
-            background: #00ff00;
-            color: #000;
-            border: none;
-            border-radius: 10px;
-            font-size: 24px;
-            font-weight: bold;
+        /* Make canvas touchable on mobile */
+        canvas {
+            touch-action: none;
             cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
-            transition: all 0.1s;
         }
         
-        .control-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 4px rgba(0, 255, 0, 0.3);
-        }
-        
-        .control-btn:hover {
-            background: #00cc00;
-        }
-        
-        .control-up { grid-column: 2; grid-row: 1; }
-        .control-left { grid-column: 1; grid-row: 2; }
-        .control-right { grid-column: 3; grid-row: 2; }
-        .control-down { grid-column: 2; grid-row: 3; }
-        
-        /* Hide mobile controls on desktop */
-        @media (min-width: 768px) {
-            .mobile-controls {
-                display: none;
-            }
-        }
-        
-        /* Show mobile controls on mobile */
         @media (max-width: 767px) {
-            .mobile-controls {
-                display: grid;
-            }
             .controls {
                 font-size: 0.9em;
+            }
+            canvas {
+                border: 3px solid #00ff00;
+                background-color: #000;
+                box-shadow: 0 0 20px #00ff00;
+                touch-action: manipulation;
             }
         }
         
@@ -167,16 +127,7 @@
         <div class="score">Score: <span id="score">0</span></div>
         <div class="level">Level: <span id="level">1</span></div>
         <div id="levelUp" class="level-up" style="display: none;"></div>
-        <div class="controls">Desktop: Arrow Keys or WASD | Mobile: Touch buttons below</div>
-        
-        <!-- Mobile Touch Controls -->
-        <div class="mobile-controls">
-            <button class="control-btn control-up" onclick="mobileControl('up')">↑</button>
-            <button class="control-btn control-left" onclick="mobileControl('left')">←</button>
-            <button class="control-btn control-right" onclick="mobileControl('right')">→</button>
-            <button class="control-btn control-down" onclick="mobileControl('down')">↓</button>
-        </div>
-        
+        <div class="controls">Desktop: Arrow Keys or WASD | Mobile: Touch anywhere on game area</div>
         <div id="gameOver" class="game-over" style="display: none;">GAME OVER!</div>
         <button id="restartBtn" class="restart-btn" style="display: none;" onclick="restartGame()">Play Again</button>
     </div>
@@ -492,7 +443,62 @@
             handleDirectionInput(keyPressed);
         });
 
-        // Handle direction input (both keyboard and mobile)
+        // Handle touch input on canvas
+        canvas.addEventListener('touchstart', handleTouch, { passive: false });
+        canvas.addEventListener('click', handleTouch);
+
+        function handleTouch(e) {
+            if (!gameRunning) return;
+            
+            e.preventDefault();
+            
+            // Get touch/click coordinates
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.type === 'touchstart') {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            // Convert to canvas coordinates
+            const canvasX = clientX - rect.left;
+            const canvasY = clientY - rect.top;
+            
+            // Convert to grid coordinates
+            const gridX = Math.floor(canvasX / gridSize);
+            const gridY = Math.floor(canvasY / gridSize);
+            
+            // Get snake head position
+            const headX = snake[0].x;
+            const headY = snake[0].y;
+            
+            // Calculate direction based on touch position relative to snake head
+            const deltaX = gridX - headX;
+            const deltaY = gridY - headY;
+            
+            // Determine primary direction (larger delta wins)
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Horizontal movement
+                if (deltaX > 0) {
+                    handleDirectionInput('right');
+                } else {
+                    handleDirectionInput('left');
+                }
+            } else {
+                // Vertical movement
+                if (deltaY > 0) {
+                    handleDirectionInput('down');
+                } else {
+                    handleDirectionInput('up');
+                }
+            }
+        }
+
+        // Handle direction input (both keyboard and touch)
         function handleDirectionInput(input) {
             const goingUp = dy === -1;
             const goingDown = dy === 1;
@@ -520,12 +526,6 @@
                 dx = 0;
                 dy = 1;
             }
-        }
-
-        // Mobile control function
-        function mobileControl(direction) {
-            if (!gameRunning) return;
-            handleDirectionInput(direction);
         }
 
         // Game loop
