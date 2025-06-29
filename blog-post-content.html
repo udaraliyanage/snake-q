@@ -1,0 +1,126 @@
+<h1>🐍 Building a Classic Snake Game with Amazon Q CLI</h1>
+
+<p><em>How AI-powered development transformed a nostalgic idea into a fully-featured browser game</em></p>
+
+<h2>Introduction</h2>
+
+<p>As part of the <strong>Amazon Builder Developer Community T-Shirt Challenge</strong>, I built a complete Snake game using Amazon Q CLI. This post covers effective AI prompting techniques and how Amazon Q handled classic programming challenges.</p>
+
+<h2>🎮 Why I Chose Snake Game</h2>
+
+<p>My first mobile phone was a Nokia with the built-in Snake game. Despite simple graphics, it was addictive and nostalgic. Snake offered the perfect balance for demonstrating development skills: core mechanics (movement, collision detection), advanced features (progressive difficulty, bonus systems), and technical challenges (canvas rendering, game loops).</p>
+
+<h2>🤖 Effective Prompting Techniques</h2>
+
+<h3>1. Iterative Feature Building</h3>
+<p>Instead of requesting everything at once, I broke down features logically:</p>
+<pre><code>Initial: "Create basic Snake game with arrow controls"
+Enhancement: "Add wrap-around edges instead of wall collision"
+Polish: "Add bonus golden mice that blink and give 100 points"</code></pre>
+
+<h3>2. Specific Visual Requirements</h3>
+<p><strong>Instead of</strong>: "Make the snake look better"<br>
+<strong>I used</strong>: "Make snake head with directional eyes, start with size 3, make tail smaller and darker"</p>
+
+<h3>3. Problem-Solution Context</h3>
+<p>When encountering issues, I provided clear context about the problem and desired solution, which helped Amazon Q understand both the technical issue and expected behavior.</p>
+
+<h2>🧠 How AI Handled Programming Challenges</h2>
+
+<h3>Collision Detection</h3>
+<pre><code>// Self-collision detection
+for (let segment of snake) {
+    if (head.x === segment.x && head.y === segment.y) {
+        gameOver();
+        return;
+    }
+}
+
+// Food collision with growth logic
+if (head.x === food.x && head.y === food.y) {
+    score += 10;
+    randomFood();
+} else {
+    snake.pop(); // Remove tail if no food eaten
+}</code></pre>
+
+<h3>Wrap-Around Logic</h3>
+<pre><code>// Handle wrap-around at edges
+if (head.x < 0) {
+    head.x = tileCount - 1; // Wrap to right side
+} else if (head.x >= tileCount) {
+    head.x = 0; // Wrap to left side
+}</code></pre>
+
+<h3>Dynamic Speed Adjustment</h3>
+<pre><code>// Increase speed every 10 mice
+if (miceEaten % 10 === 0) {
+    level++;
+    gameSpeed = Math.max(50, gameSpeed - 25);
+    clearInterval(gameInterval);
+    gameInterval = setInterval(gameLoop, gameSpeed);
+}</code></pre>
+
+<h2>⚡ Development Automation Benefits</h2>
+
+<p>Amazon Q CLI significantly accelerated development:</p>
+<ul>
+<li><strong>Instant Code Generation</strong>: Complete HTML/CSS/JavaScript structure in seconds</li>
+<li><strong>Automatic Bug Fixes</strong>: Identified root causes and implemented solutions</li>
+<li><strong>Feature Integration</strong>: Seamlessly added bonus mouse system without breaking existing code</li>
+<li><strong>Documentation</strong>: Generated comprehensive README automatically</li>
+</ul>
+
+<h2>💻 Interesting AI-Generated Solutions</h2>
+
+<h3>Directional Snake Eyes</h3>
+<pre><code>// Eyes change direction based on movement
+if (dx === 1) { // Moving right
+    ctx.fillRect(x + 12, y + 4, 3, 3);
+    ctx.fillRect(x + 12, y + 12, 3, 3);
+} else if (dx === -1) { // Moving left
+    ctx.fillRect(x + 3, y + 4, 3, 3);
+    ctx.fillRect(x + 3, y + 12, 3, 3);
+}</code></pre>
+
+<h3>Blinking Bonus Mouse</h3>
+<pre><code>// Toggle blink state every 5 game loops
+if (bonusTimer % 5 === 0) {
+    bonusBlinkState = !bonusBlinkState;
+}
+
+// Only draw if visible during blink
+if (bonusFood && bonusBlinkState) {
+    // Draw golden mouse with sparkle effects
+}</code></pre>
+
+<h2>🎯 Final Game Features</h2>
+
+<p>The completed game includes:</p>
+<ul>
+<li><strong>Core Mechanics</strong>: Arrow/WASD controls, wrap-around edges, progressive difficulty</li>
+<li><strong>Visual Design</strong>: Snake with head/body/tail differentiation, realistic mice graphics</li>
+<li><strong>Advanced Features</strong>: Golden bonus mice (100 points), blinking effects, level progression</li>
+<li><strong>Technical Excellence</strong>: HTML5 Canvas rendering, efficient game loop, modern event handling</li>
+</ul>
+
+<h2>🚀 Key Learnings</h2>
+
+<ul>
+<li><strong>Iterative prompting</strong> produces better results than monolithic requests</li>
+<li><strong>Context and specificity</strong> are crucial for optimal AI assistance</li>
+<li><strong>AI excels</strong> at implementing well-defined requirements</li>
+<li><strong>Complex features</strong> can be built through logical decomposition</li>
+</ul>
+
+<h2>🎉 Conclusion</h2>
+
+<p>Building this Snake game with Amazon Q CLI showcased the power of AI-assisted development. What traditionally would require days of coding was accomplished in hours through effective AI collaboration. Amazon Q didn't just generate code - it became a collaborative partner that understood game development principles and implemented sophisticated solutions.</p>
+
+<p>This demonstrates that AI tools like Amazon Q CLI empower developers to build more ambitious projects faster and with higher quality.</p>
+
+<hr>
+
+<p><strong>Built with</strong>: Amazon Q CLI, HTML5 Canvas, JavaScript ES6, CSS3</p>
+
+<p><strong>Tags:</strong> #AmazonQCLI #GameDevelopment #AI #WebDevelopment #JavaScript</p>
