@@ -75,6 +75,64 @@
             color: #ccc;
         }
         
+        .mobile-controls {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 10px;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+        }
+        
+        .control-btn {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
+            transition: all 0.1s;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 255, 0, 0.3);
+        }
+        
+        .control-btn:hover {
+            background: #00cc00;
+        }
+        
+        .control-up { grid-column: 2; grid-row: 1; }
+        .control-left { grid-column: 1; grid-row: 2; }
+        .control-right { grid-column: 3; grid-row: 2; }
+        .control-down { grid-column: 2; grid-row: 3; }
+        
+        /* Hide mobile controls on desktop */
+        @media (min-width: 768px) {
+            .mobile-controls {
+                display: none;
+            }
+        }
+        
+        /* Show mobile controls on mobile */
+        @media (max-width: 767px) {
+            .mobile-controls {
+                display: grid;
+            }
+            .controls {
+                font-size: 0.9em;
+            }
+        }
+        
         .game-over {
             color: #ff0000;
             font-size: 2em;
@@ -109,7 +167,16 @@
         <div class="score">Score: <span id="score">0</span></div>
         <div class="level">Level: <span id="level">1</span></div>
         <div id="levelUp" class="level-up" style="display: none;"></div>
-        <div class="controls">Press any Arrow Key (or WASD) to Start! Watch for golden bonus mice!</div>
+        <div class="controls">Desktop: Arrow Keys or WASD | Mobile: Touch buttons below</div>
+        
+        <!-- Mobile Touch Controls -->
+        <div class="mobile-controls">
+            <button class="control-btn control-up" onclick="mobileControl('up')">↑</button>
+            <button class="control-btn control-left" onclick="mobileControl('left')">←</button>
+            <button class="control-btn control-right" onclick="mobileControl('right')">→</button>
+            <button class="control-btn control-down" onclick="mobileControl('down')">↓</button>
+        </div>
+        
         <div id="gameOver" class="game-over" style="display: none;">GAME OVER!</div>
         <button id="restartBtn" class="restart-btn" style="display: none;" onclick="restartGame()">Play Again</button>
     </div>
@@ -422,33 +489,44 @@
             e.preventDefault();
 
             const keyPressed = e.key;
+            handleDirectionInput(keyPressed);
+        });
+
+        // Handle direction input (both keyboard and mobile)
+        function handleDirectionInput(input) {
             const goingUp = dy === -1;
             const goingDown = dy === 1;
             const goingRight = dx === 1;
             const goingLeft = dx === -1;
 
-            // Start the game on first key press
+            // Start the game on first input
             if (!gameStarted) {
                 gameStarted = true;
             }
 
-            if ((keyPressed === 'ArrowLeft' || keyPressed === 'a' || keyPressed === 'A') && !goingRight) {
+            if ((input === 'ArrowLeft' || input === 'a' || input === 'A' || input === 'left') && !goingRight) {
                 dx = -1;
                 dy = 0;
             }
-            if ((keyPressed === 'ArrowUp' || keyPressed === 'w' || keyPressed === 'W') && !goingDown) {
+            if ((input === 'ArrowUp' || input === 'w' || input === 'W' || input === 'up') && !goingDown) {
                 dx = 0;
                 dy = -1;
             }
-            if ((keyPressed === 'ArrowRight' || keyPressed === 'd' || keyPressed === 'D') && !goingLeft) {
+            if ((input === 'ArrowRight' || input === 'd' || input === 'D' || input === 'right') && !goingLeft) {
                 dx = 1;
                 dy = 0;
             }
-            if ((keyPressed === 'ArrowDown' || keyPressed === 's' || keyPressed === 'S') && !goingUp) {
+            if ((input === 'ArrowDown' || input === 's' || input === 'S' || input === 'down') && !goingUp) {
                 dx = 0;
                 dy = 1;
             }
-        });
+        }
+
+        // Mobile control function
+        function mobileControl(direction) {
+            if (!gameRunning) return;
+            handleDirectionInput(direction);
+        }
 
         // Game loop
         function gameLoop() {
